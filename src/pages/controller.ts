@@ -7,7 +7,8 @@ import {
   Body,
   Post,
   HttpCode,
-  NotFoundError
+  NotFoundError,
+  Authorized
 } from "routing-controllers";
 //import pagesById, { Page } from "./data";
 import Page from "./entity";
@@ -43,6 +44,7 @@ export default class PageController {
   //     return pagesById[id];
   //   }
 
+  @Authorized()
   @Put("/pages/:id")
   async updatePage(@Param("id") id: number, @Body() update: Partial<Page>) {
     const page = await Page.findOne(id);
@@ -56,7 +58,7 @@ export default class PageController {
   //     console.log(`Incoming POST body param:`, body);
   //     return body;
   //   }
-
+  @Authorized()
   @Post("/pages")
   @HttpCode(201)
   createPage(@Body() page: Page) {

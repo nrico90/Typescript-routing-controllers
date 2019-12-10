@@ -5,8 +5,7 @@ import {
   Put,
   Body,
   NotFoundError,
-  Post,
-  HttpCode
+  Post
 } from "routing-controllers";
 import User from "./entity";
 import Page from "../pages/entity";
@@ -22,15 +21,19 @@ export default class UserController {
     const users = await User.find();
     return { users };
   }
+
   @Put("/users/:id")
   async updateUser(@Param("id") id: number, @Body() update: Partial<Page>) {
     const user = await User.findOne(id);
     if (!user) throw new NotFoundError("Cannot find page");
     return User.merge(user, update).save();
   }
+
   @Post("/users")
-  @HttpCode(201)
-  createUser(@Body() user: User) {
-    return user.save();
+  async createUser(@Body() user: User) {
+    const { password, ...rest } = user;
+    const entity = User.create(rest);
+    await entity.setPassword(password);
+    return entity.save();
   }
 }
